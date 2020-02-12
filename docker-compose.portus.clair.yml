@@ -6,7 +6,7 @@ services:
     env_file:
       - ./portus/.portus.env
     ports:
-      - 3030:3000
+      - 3001:3000
     depends_on:
       - mariadb
     links:
