@@ -21,7 +21,7 @@ services:
       - mariadb
     environment:
     env_file:
-     - ./portus/.background.env 
+      - ./portus/.background.env 
     links:
       - mariadb
     volumes:
@@ -31,25 +31,14 @@ services:
     image: library/mariadb:10.0.23
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
     env_file:
+      - ./registry/.registry.env
     volumes:
       - /var/lib/portus/mariadb:/var/lib/mysql
 
   registry:
     image: library/registry:2.6
-    environment:
-      # Authentication
-      REGISTRY_AUTH_TOKEN_REALM: http://${MACHINE_FQDN}:3000/v2/token
-      REGISTRY_AUTH_TOKEN_SERVICE: ${MACHINE_FQDN}:5000
-      REGISTRY_AUTH_TOKEN_ISSUER: ${MACHINE_FQDN}
-      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /secrets/portus.crt
-
-      # Portus endpoint
-      REGISTRY_NOTIFICATIONS_ENDPOINTS: >
-        - name: portus
-          url: http://${MACHINE_FQDN}:3000/v2/webhooks/events
-          timeout: 2000ms
-          threshold: 5
-          backoff: 1s
+    env_file:
+      - ./registry/.registry.env
     volumes:
       - /var/lib/portus/registry:/var/lib/registry
       - ./secrets:/secrets:ro
